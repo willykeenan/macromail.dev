@@ -1,0 +1,29 @@
+# MacroMail
+
+> MacroMail is a free, open-source, self-hostable email tool for AI agents.
+> It runs on SQLite. Source: https://github.com/willykeenan/macromail.dev
+
+## Product truth
+
+- Site: https://macromail.dev
+- Docs: https://macromail.dev/docs
+- Source: https://github.com/willykeenan/macromail.dev
+- License: MIT
+- Backend: SQLite under MACROMAIL_DATA_DIR
+- Auth: account signup/login, then Bearer API keys created on /app/api-keys
+- REST: https://macromail.dev/api/v1 (or http://localhost:3000/api/v1 when self-hosted)
+- MCP: POST https://macromail.dev/api/mcp (or http://localhost:3000/api/mcp) with Authorization: Bearer mm_live_…
+- Outbound: the account owner’s own SMTP credentials, saved in /app/settings. MacroMail never sends from the server owner’s mailbox.
+- Mailboxes: on the server’s own mailbox domains only (MACROMAIL_MAILBOX_DOMAINS). Internal delivery between MacroMail mailboxes; mail to or from a mailbox must come from one of your own mailboxes. Internet inbound is not available.
+- Gmail / Outlook: optional, read-only, only when the server has OAuth env vars. IMAP is not shipped.
+- AI triage and drafts: the user’s own Anthropic key, saved in /app/settings or sent as the x-anthropic-key header. There is no server-wide key.
+
+## Self-host (3 commands)
+
+```
+cp .env.example .env
+npm ci
+npm run dev
+```
+
+See /llms-full.txt for REST paths and MCP tools.

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>dev.macromail</string>
+  <key>WorkingDirectory</key>
+  <string>__APP_DIR__</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__NODE__</string>
+    <string>__APP_DIR__/node_modules/next/dist/bin/next</string>
+    <string>start</string>
+    <string>-H</string>
+    <string>127.0.0.1</string>
+    <string>-p</string>
+    <string>3000</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <!-- Copy optional keys from .env (OAuth, limits) into this dict. launchd does not load .env. -->
+    <key>NODE_ENV</key>
+    <string>production</string>
+    <key>PORT</key>
+    <string>3000</string>
+    <key>HOSTNAME</key>
+    <string>127.0.0.1</string>
+    <key>MACROMAIL_DATA_DIR</key>
+    <string>__DATA_DIR__</string>
+    <key>SESSION_SECRET</key>
+    <string>__SESSION_SECRET__</string>
+    <key>TOKEN_ENC_KEY</key>
+    <string>__TOKEN_ENC_KEY__</string>
+    <key>MACROMAIL_MAILBOX_DOMAINS</key>
+    <string>__MAILBOX_DOMAINS__</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>__LOG_DIR__/macromail.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>__LOG_DIR__/macromail.err.log</string>
+</dict>
+</plist>

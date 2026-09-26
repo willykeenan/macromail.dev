@@ -1,0 +1,89 @@
+# MacroMail — current public contract
+
+MacroMail is a free, open-source, self-hostable email tool for AI agents.
+It is this Next.js app running against SQLite. There is no paid product,
+hosted inbox operator, or published language SDK.
+
+- Public name: MacroMail
+- Source: https://github.com/willykeenan/macromail.dev
+- License: MIT
+- Site: https://macromail.dev
+- Docs: https://macromail.dev/docs
+- Health: GET /api/health
+
+## What works today
+
+1. Accounts: signup and login.
+2. API keys: created on /app/api-keys. Header `Authorization: Bearer mm_live_…`.
+3. Agent mailboxes: create addresses on the server’s own mailbox domains (MACROMAIL_MAILBOX_DOMAINS, default example.com). Delivery is internal only (MacroMail mailbox → MacroMail mailbox), and mail to or from a mailbox must come from one of the sender’s own mailboxes. Internet inbound is not available. There is no public MX.
+4. REST v1 under /api/v1.
+5. MCP at /api/mcp. Every advertised tool is implemented.
+6. Outbound email through the user’s own SMTP account saved in /app/settings. Test API keys simulate every send, including internal delivery. MacroMail never sends from the server owner’s mailbox.
+7. Optional read-only Gmail/Outlook connect when GOOGLE_* or MICROSOFT_* env vars are set. IMAP is not shipped.
+8. AI triage and drafts with the user’s own Anthropic key (/app/settings, or the x-anthropic-key header on REST and MCP calls). Without a key, those calls return a note; they do not invent a result.
+
+## Self-host
+
+```
+cp .env.example .env
+npm ci
+npm run dev
+```
+
+Required for a real deployment: MACROMAIL_DATA_DIR, SESSION_SECRET, TOKEN_ENC_KEY.
+Set MACROMAIL_MAILBOX_DOMAINS to the domains the server answers for. Google/Microsoft
+OAuth env vars are optional. SMTP and Anthropic keys are per account, saved in Settings.
+See docs/SELF-HOST.md.
+
+## REST v1
+
+All routes except GET /api/v1/agent-contract require a Bearer API key.
+Sending-only keys may call send and inspect sent mail. Mailbox routes and domain writes need full_access.
+Dynamic route params are Promises (Next.js 16).
+
+- POST /api/v1/emails — send one email. Body: from, to, subject, html or text. Optional cc, bcc, reply_to, tags, internal_only. Limits: 50 recipients, 256 KB each for text and html, 1 MB request body.
+- GET /api/v1/emails?limit=50 — list recent emails.
+- GET /api/v1/emails/:id — fetch one sent email.
+- POST /api/v1/emails/batch — JSON array of 1–100 send bodies (4 MB request body).
+- GET /api/v1/mailboxes — list mailboxes.
+- POST /api/v1/mailboxes — { address, display_name? }. The address must be on one of the server’s mailbox domains.
+- GET /api/v1/mailboxes/:address/messages?unread=1&limit=50 — poll a mailbox.
+- PATCH /api/v1/mailboxes/:address/messages — mark messages read. Body: { ids: ["mbm_…"] }.
+- GET /api/v1/domains — list stored sending-domain records.
+- POST /api/v1/domains — { name }. Recorded locally; outbound still uses SMTP.
+- GET /api/v1/domains/:id
+- DELETE /api/v1/domains/:id
+- GET /api/v1/agent-contract — public product discovery. No account data.
+
+## MCP tools at /api/mcp
+
+Transport: Streamable HTTP, JSON-RPC 2.0. POST with Authorization: Bearer <key>.
+Optional header x-anthropic-key for triage_inbox and draft_reply. Batches hold at most 20 requests.
+
+- send_email
+- list_emails
+- get_email
+- list_domains
+- create_domain
+- list_accounts
+- search_inbox
+- read_thread
+- triage_inbox
+- draft_reply
+- create_mailbox
+- list_mailboxes
+- read_mailbox
+
+Point Claude, Cursor, ChatGPT connectors, or any MCP client at your origin.
+There is no npm install package for a MacroMail SDK or MCP wrapper.
+
+## Limits
+
+- Internet inbound is not available.
+- Mailboxes only on the server’s mailbox domains; up to 20 per account.
+- Per account: 30 SMTP sends and 200 internal deliveries per hour, 100 MB of stored mail by default.
+- IMAP is not shipped.
+- Gmail/Outlook connect is read-only and only when OAuth env vars are present.
+- No language SDKs.
+- No Zapier, Slack, CRM, or similar connectors.
+- Domain records are local notes. They do not provision DNS or SES.

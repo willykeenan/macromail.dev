@@ -1,0 +1,38 @@
+{
+  "name": "macromail",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "test:safety": "node --test scripts/email-safety.test.mjs scripts/managed-service-product.test.mjs",
+    "test:auth": "node --experimental-strip-types --test scripts/auth-redirects.test.mjs scripts/auth-phase2.test.mjs",
+    "test": "npm run test:safety && npm run test:auth && npm run test:backend && npm run test:e2e",
+    "test:backend": "node --experimental-sqlite --experimental-strip-types --import ./scripts/register-alias.mjs --test scripts/db.test.mjs scripts/auth-backend.test.mjs scripts/api-keys.test.mjs scripts/mailboxes.test.mjs scripts/mcp-tools.test.mjs scripts/rate-limit.test.mjs scripts/send-policy.test.mjs scripts/smtp-hardening.test.mjs scripts/public-surface.test.mjs",
+    "test:e2e": "node --experimental-sqlite --experimental-strip-types --import ./scripts/register-alias.mjs --test scripts/http-e2e.test.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
+    "clsx": "^2.1.1",
+    "geist": "^1.7.2",
+    "lucide-react": "^1.21.0",
+    "nanoid": "^5.1.16",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
