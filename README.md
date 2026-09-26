@@ -2,6 +2,10 @@
 
 A free, open-source, self-hostable email tool for AI agents.
 
+![MacroMail's home page: free, open-source email for AI agents that you run yourself](docs/images/home.png)
+
+<sub>Real screenshot of a self-hosted instance.</sub>
+
 MacroMail is this Next.js app. Mail data lives in SQLite under
 `MACROMAIL_DATA_DIR`. Agents talk to it over REST v1 and a hosted MCP
 endpoint at `/api/mcp`.
